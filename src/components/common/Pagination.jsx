@@ -1,7 +1,7 @@
 import { usePagination } from '../../hooks/usePagination';
 
 const Pagination = ({ total, perPage = 10, currentPage, onPageChange }) => {
-  const { totalPages, hasNext, hasPrev } = usePagination(total, perPage);
+  const { totalPages, hasNext, hasPrev } = usePagination(total, perPage, currentPage);
 
   if (totalPages <= 1) return null;
 

@@ -17,38 +17,32 @@ import { TableRowSkeleton } from '../../components/common/Skeleton';
 const PER_PAGE = 10;
 
 const ApplicationsPage = () => {
-  const { applications, loading, refetch } = useApplications();
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [platformFilter, setPlatformFilter] = useState('');
-  const [deleteId, setDeleteId] = useState(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const { applications, loading, total, refetch } = useApplications({
+    search: search || undefined,
+    status: statusFilter || undefined,
+    applied_platform: platformFilter || undefined,
+    page: currentPage
+  });
+
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const debouncedSearch = useCallback(
     debounce((val) => { setSearch(val); setCurrentPage(1); }, 300),
     []
   );
 
-  const filtered = useMemo(() => {
-    return applications.filter((app) => {
-      const q = search.toLowerCase();
-      const matchSearch = !q || (
-        app.company_name?.toLowerCase().includes(q) ||
-        app.job_role?.toLowerCase().includes(q) ||
-        app.applied_platform?.toLowerCase().includes(q)
-      );
-      const matchStatus = !statusFilter || app.status === statusFilter;
-      const matchPlatform = !platformFilter || app.applied_platform === platformFilter;
-      return matchSearch && matchStatus && matchPlatform;
-    });
-  }, [applications, search, statusFilter, platformFilter]);
-
-  const { startIndex, endIndex, totalPages, hasNext, hasPrev } = usePagination(filtered.length, PER_PAGE);
-  const paginated = filtered.slice(startIndex, endIndex);
+  const debouncedSearch = useCallback(
+    debounce((val) => { setSearch(val); setCurrentPage(1); }, 300),
+    []
+  );
 
   const handleDelete = async () => {
     setDeleteLoading(true);
@@ -80,7 +74,7 @@ const ApplicationsPage = () => {
         <div>
           <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">Applications</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {applications.length} total · {filtered.length} shown
+            {total} total
           </p>
         </div>
         <Button
@@ -152,7 +146,7 @@ const ApplicationsPage = () => {
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">
               {loading ? (
                 [...Array(5)].map((_, i) => <TableRowSkeleton key={i} cols={6} />)
-              ) : paginated.length === 0 ? (
+              ) : applications.length === 0 ? (
                 <tr>
                   <td colSpan={6}>
                     <EmptyState
@@ -163,7 +157,7 @@ const ApplicationsPage = () => {
                   </td>
                 </tr>
               ) : (
-                paginated.map((app) => (
+                applications.map((app) => (
                   <tr key={app.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors group">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
@@ -242,10 +236,10 @@ const ApplicationsPage = () => {
         </div>
 
         {/* Pagination */}
-        {filtered.length > PER_PAGE && (
+        {total > PER_PAGE && (
           <div className="px-5 border-t border-gray-100 dark:border-gray-800">
             <Pagination
-              total={filtered.length}
+              total={total}
               perPage={PER_PAGE}
               currentPage={currentPage}
               onPageChange={setCurrentPage}

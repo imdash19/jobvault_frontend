@@ -44,25 +44,25 @@ const DashboardPage = () => {
   const statCards = [
     {
       label: 'Total Applications',
-      value: stats?.total_applications ?? applications.length,
+      value: stats?.total ?? applications.length,
       icon: '📋',
       gradient: 'bg-gradient-to-br from-indigo-500 to-indigo-700',
     },
     {
       label: 'Interviews',
-      value: stats?.total_interviews ?? applications.filter(a => ['interview', 'technical'].includes(a.status)).length,
+      value: stats?.interviews ?? applications.filter(a => ['interview', 'technical'].includes(a.status)).length,
       icon: '🎯',
       gradient: 'bg-gradient-to-br from-purple-500 to-purple-700',
     },
     {
       label: 'Offers',
-      value: stats?.total_offers ?? applications.filter(a => a.status === 'offer').length,
+      value: stats?.offers ?? applications.filter(a => a.status === 'offer').length,
       icon: '🏆',
       gradient: 'bg-gradient-to-br from-green-500 to-emerald-700',
     },
     {
       label: 'Rejections',
-      value: stats?.total_rejections ?? applications.filter(a => a.status === 'rejected').length,
+      value: stats?.rejected ?? applications.filter(a => a.status === 'rejected').length,
       icon: '❌',
       gradient: 'bg-gradient-to-br from-red-500 to-red-700',
     },
