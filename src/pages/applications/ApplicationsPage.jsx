@@ -39,11 +39,6 @@ const ApplicationsPage = () => {
     []
   );
 
-  const debouncedSearch = useCallback(
-    debounce((val) => { setSearch(val); setCurrentPage(1); }, 300),
-    []
-  );
-
   const handleDelete = async () => {
     setDeleteLoading(true);
     try {
